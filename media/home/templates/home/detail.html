@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}detail{% endblock title %}
+{% block content %}
+
+<div class="card">
+
+    <div class="card-body">
+
+        <h4 class="text-center"><a href="{% url 'accounts:user_profile' post.user.id %}">{{ post.user.username }}</a> - {{ post.updated|date:"Y-M-d" }}</h4>
+
+        {% if request.user.id == post.user.id %}
+        <a href="{% url 'home:delete' post.id %}" class="btn btn-danger">Delete</a>
+        <a href="{% url 'home:update' post.id %}" class="btn btn-info">Update</a>
+
+        {% endif %}
+        <p> {{ post.username }} </p>
+        <p> {{ post.body }} </p>
+        {% if request.user.is_authenticated %}
+            {% if request.user.id == post.user.id %}
+                <p class="alert alert-warning">can't like you're post</p>
+            {% else %}
+                <a href="{% url 'home:like' post.id %}" class="{% if not liked %}disabled{% endif %} btn btn-primary col-md-2">Like  {{ post.like_count }}</a>
+                <a href="{% url 'home:dislike' post.id %}" class="{% if liked %}disabled{% endif %} btn btn-danger col-md-2">Dislike</a>
+            {% endif %}
+        {% endif %}
+        <hr>
+
+        {% for comments in comment %}
+            <div class="card bg-dark text-white">
+
+            <h5 class="card-header">{{ comments.user }} | {{ comments.created|timesince }}</h5>
+            <p class="card-body">{{ comments.body }} <a class="p-2 m-2 btn btn-warning" href="{% url 'home:add_reply' post.id comments.id %}">Reply</a></p>
+
+            {% with replies=comments.rcomment.all %}
+                {% for reply in replies %}
+                    <div class="bg-primary p-2 m-3 card text-white">
+                        <p class="card-header">{{ reply.user }} | {{ reply.created|timesince }}</p>
+                        <p class="card-body">{{ reply.body }}</p>
+                    </div>
+                {% endfor %}
+            {% endwith %}
+
+        </div><br>
+        {% empty %}
+        <p class="text-primary">no comments yet!!</p>
+        {% endfor %}
+         <br>
+         <br>
+{% if request.user.id == post.user.id %}
+        <p class="alert alert-warning">you're post , can't submit comment</p>
+{% else %}
+
+
+            <form action="" method="POST" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input class="btn btn-primary" type="submit" value="send">
+            </form>
+
+{% endif %}
+    </div>
+
+
+
+
+</div>
+
+
+{% endblock content %}

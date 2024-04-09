@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}reply_comment{% endblock title %}
+{% block content %}
+
+   <div class="card bg-dark text-white">
+
+        <h5 class="card-header">{{ comment.user }} | {{ comment.created|timesince }}</h5>
+
+        <p class="card-body">{{ comment.body }} </p>
+</div>
+
+<form action="" method="POST" novalidate>
+
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="reply" class="btn btn-info">
+
+</form>
+
+{% endblock content %}
+
+
+
+
+    
